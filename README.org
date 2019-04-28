@@ -1,0 +1,59 @@
+* What's PyQt5?
+***** PyQt is a library that lets you use the Qt GUI framework from Python. Qt itself is written in C++. By using it from Python, you can build applications much more quickly while not sacrificing much of the speed of C++.
+***** PyQt5 refers to the most recent version 5 of Qt. You may still find the occasional mention of (Py)Qt4 on the web, but it is old and no longer supported.
+
+* Creating a GUI
+** import pyqt5 modules
+   #+begin_src python
+   from PyQt5.QtWidgets import QApplication, QLabel
+   #+end_src
+
+   - The QApplication class manages the GUI application's control flow and main settings.
+   - A QLabel object acts as a placeholder to display non-editable text or image, or a movie of animated GIF.
+** create a QApplication
+   This is a requirement of Qt: Every GUI app must have exactly one instance of QApplication. Many parts of Qt don't work until you have executed the above line. You will therefore need it in virtually every (Py)Qt app you write.
+
+   #+begin_src python
+   app = QApplication([])
+   #+end_src
+
+   The brackets [] in the above line represent the command line arguments passed to the application. Because our app doesn't use any parameters, we leave the brackets empty.
+** create a QLabel
+   #+begin_src python
+   label = QLabel('Hello World!')
+   label.show()
+   #+end_src
+* Workout Problem
+** Create an interface which can display the output of shell command(s)
+*** Create the layout design
+***** Start the Qt Designer Tool
+      #+begin_src bash
+      designer &
+      #+end_src
+***** Create the layout
+      - Create two PlainTextFields for taking input and showing output
+      - Create a push button to run the command
+***** Use the pyuic module to convert ui to py
+      #+begin_src bash
+      python3 -m PyQt5.uic.pyuic -x xml.ui -o output.py
+      #+end_src
+*** Run the file
+    #+begin_src bash
+    python3 output.py
+    #+end_src bash
+*** Create an API for getting the user inputted command and showing its output
+**** Connect the push button to call the api on being clicked
+     #+begin_src python
+     self.pushButton.clicked.connect(self.run_command())
+     #+end_src
+**** Define the run_command() api
+     #+begin_src python
+     def run_command(self):
+         txt = str(self.plainTextEdit_input.toPlainText())
+         process = subprocess.Popen(
+            txt, shell=True, stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT)
+         out,err = process.communicate()
+         self.plainTextEdit_output.insertPlainText(str(out,"utf-8"))
+     #+end_src
+**** Run the python file
